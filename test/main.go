@@ -1,29 +1,20 @@
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
+
+type Vertex struct {
+	Lat, Long float64
+}
+
+var m = map[string]Vertex{
+	"Bell Labs": Vertex{
+		40.68433, -74.39967,
+	},
+	"Google": Vertex{
+		37.42202, -122.08408,
+	},
+}
 
 func main() {
-	employee := map[string]int{
-		"Mark": 10, "Sandy": 20,
-		"Rocky": 30, "Rajiv": 40, "Kate": 50,
-	}
-	for key, element := range employee {
-		fmt.Println("Key:", key, "=>", "Element:", element)
-	}
-
-	m := make(map[string]int)
-
-	m["Answer"] = 42
-	fmt.Println("The value:", m["Answer"])
-
-	m["Answer"] = 48
-	fmt.Println("The value:", m["Answer"])
-
-	delete(m, "Answer")
-	fmt.Println("The value:", m["Answer"])
-
-	v, ok := m["Answer"]
-	fmt.Println("The value:", v, "Present?", ok)
+	fmt.Println(m)
 }

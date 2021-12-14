@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -23,6 +22,8 @@ type printcheck struct {
 	mapconnect   [][]string
 }
 
+var m map[string][]string
+
 var n printcheck
 
 func main() {
@@ -30,7 +31,7 @@ func main() {
 		fatal_error("Bad insertion\nEXAMPLE: go run . example01.txt")
 	}
 	checkvalid(importfile())
-	// Printcheck(n)
+	Printcheck(n)
 }
 
 func importfile() string {
@@ -43,8 +44,8 @@ func importfile() string {
 	}
 	// fmt.Println(filebuffer)
 	inputdata := string(filebuffer)
-	data := bufio.NewScanner(strings.NewReader(inputdata))
-	data.Split(bufio.ScanRunes)
+	// data := bufio.NewScanner(strings.NewReader(inputdata))
+	// data.Split(bufio.ScanRunes)
 	return inputdata
 }
 
@@ -60,6 +61,8 @@ func checkvalid(inputdata string) {
 	// var tunnel [][]string
 	// var tunnelToStruct [][]string
 	var tunnelscount int // if there are no tunnels
+
+	m = make(map[string][]string)
 
 	if inputdata[0] == 48 || !unicode.IsNumber(rune(inputdata[0])) { // find if number of ants are given
 		fatal_error("Invalid data format, invalid number of ants")
@@ -88,16 +91,16 @@ func checkvalid(inputdata string) {
 		if strings.Contains(k, "-") {
 			tunnelscount++
 			tunnelsplit := strings.Split(inputdatasplit[i], "-")
-			n.tunneltemp = [][]string{{tunnelsplit[0], tunnelsplit[1]}}
-			fmt.Println("tunnelsplit:", tunnelsplit)
-			fmt.Println("n.tunneltemp:", n.tunneltemp)
-			// n.mapconnect[room[0]] = [tunnelsplit[0], tunnelsplit[1]]
+
+			m[tunnelsplit[0]] = append(m[tunnelsplit[0]], tunnelsplit[1])
+			m[tunnelsplit[1]] = append(m[tunnelsplit[1]], tunnelsplit[0])
+
 		}
-		// fmt.Println(n.tunneltemp)
-		for i := 0; i < len(n.tunneltemp); i++ {
-			n.tunnel = append(n.tunnel, n.tunneltemp[i])
-		}
+
 		fmt.Println(k)
+	}
+	for _, i := range n.rooms {
+		fmt.Println("Room", i, "is connected to:", m[i])
 	}
 
 	// If there are no ##startRoom or ##endRoom
@@ -108,9 +111,6 @@ func checkvalid(inputdata string) {
 	} else if tunnelscount == 0 {
 		fatal_error("Invalid data format, no made tunnels")
 	}
-	// fmt.Println("Tunnelstostruct are:", n.tunnel[0][1])
-	// fmt.Println(n.mapconnect)
-	fmt.Println(n.tunnel[2])
 }
 
 func fatal_error(s string) {
