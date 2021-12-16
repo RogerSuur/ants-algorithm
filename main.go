@@ -32,6 +32,12 @@ func main() {
 	}
 	checkvalid(importfile())
 	Printcheck(n)
+
+	path := make([]string, 0)
+
+	shortestPath := ShortestPath(m, n.startRoom, n.endRoom, path)
+
+	fmt.Println(shortestPath)
 }
 
 func importfile() string {
@@ -94,10 +100,12 @@ func checkvalid(inputdata string) {
 
 			m[tunnelsplit[0]] = append(m[tunnelsplit[0]], tunnelsplit[1])
 			m[tunnelsplit[1]] = append(m[tunnelsplit[1]], tunnelsplit[0])
-
+			n.tunneltemp = [][]string{{tunnelsplit[0], tunnelsplit[1]}}
 		}
-
-		fmt.Println(k)
+		for i := 0; i < len(n.tunneltemp); i++ {
+			n.tunnel = append(n.tunnel, n.tunneltemp[i])
+			fmt.Println(k)
+		}
 	}
 	for _, i := range n.rooms {
 		fmt.Println("Room", i, "is connected to:", m[i])
@@ -126,5 +134,39 @@ func Printcheck(n printcheck) {
 	fmt.Println("Ending coordinates are:", n.endXY)
 	fmt.Println("Rooms are:", n.rooms)
 	fmt.Println("Room coordinates are:", n.roomsXY)
-	fmt.Println("Tunnels are:", n.tunnel)
+	// fmt.Println("Tunnels are:", n.tunnel)
+	// fmt.Println(m)
+}
+
+type Array []string
+
+func (arr Array) hasPropertyOf(str string) bool {
+	for _, v := range arr {
+		if str == v {
+			return true
+		}
+	}
+	// fmt.Println(arr)
+	return false
+}
+
+func ShortestPath(m map[string][]string, startRoom string, endRoom string, path Array) []string {
+	path = append(path, startRoom)
+
+	if startRoom == endRoom {
+		return path
+	}
+	// fmt.Println(path)
+	shortest := make([]string, 0)
+	for _, node := range m[startRoom] {
+		if !path.hasPropertyOf(node) {
+			newPath := ShortestPath(m, node, endRoom, path)
+			if len(newPath) > 0 {
+				if len(shortest) == 0 || (len(newPath) < len(shortest)) {
+					shortest = newPath
+				}
+			}
+		}
+	}
+	return shortest
 }
